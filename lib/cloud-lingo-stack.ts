@@ -1,4 +1,5 @@
 import * as cdk from 'aws-cdk-lib'
+import { RestApi, LambdaIntegration } from 'aws-cdk-lib/aws-apigateway'
 import { Construct } from 'constructs'
 import { Runtime } from 'aws-cdk-lib/aws-lambda'
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs'
@@ -6,6 +7,20 @@ import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs'
 export class CloudLingoStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props)
+
+    // API Gateway
+    const api = new RestApi(this, 'cloudLingoApi', {
+      restApiName: 'Cloud Lingo Service',
+    })
+
+    const apiResource = api.root.addResource('translate')
+
+    // Lambda Functions
+    const getTranslationFunction = this.createLambda(
+      'translateLambda',
+      'src/getTranslation.ts',
+    )
+    apiResource.addMethod('GET', new LambdaIntegration(getTranslationFunction))
   }
 
   createLambda = (name: string, path: string) => {
