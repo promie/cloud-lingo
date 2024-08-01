@@ -17,9 +17,9 @@ export class CloudLingoStack extends cdk.Stack {
     const apiResource = api.root.addResource('translation')
 
     // Lambda Functions
-    const getTranslationFunction = this.createLambda(
+    const postTranslationFunction = this.createLambda(
       'translateLambda',
-      'src/getTranslation.ts',
+      'src/postTranslation.ts',
     )
 
     // A policy that gets attached to the lambda function allowing it to use the Translate service
@@ -28,9 +28,12 @@ export class CloudLingoStack extends cdk.Stack {
       resources: ['*'],
     })
 
-    apiResource.addMethod('GET', new LambdaIntegration(getTranslationFunction))
+    apiResource.addMethod(
+      'POST',
+      new LambdaIntegration(postTranslationFunction),
+    )
     // Attach the policy to the lambda function
-    getTranslationFunction.role?.addToPrincipalPolicy(translateAccessPolicy)
+    postTranslationFunction.role?.addToPrincipalPolicy(translateAccessPolicy)
   }
 
   createLambda = (name: string, path: string) => {

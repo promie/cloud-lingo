@@ -1,12 +1,6 @@
 import { APIGatewayProxyResult } from 'aws-lambda'
-import {
-  TranslateClient,
-  TranslateTextCommand,
-} from '@aws-sdk/client-translate'
-
-const translateClient = new TranslateClient({
-  region: 'ap-southeast-2',
-} as any)
+import { TranslateTextCommand } from '@aws-sdk/client-translate'
+import { AWSTranslateClient } from './lib/translate'
 
 export const handler = async (): Promise<APIGatewayProxyResult> => {
   const command = new TranslateTextCommand({
@@ -15,7 +9,7 @@ export const handler = async (): Promise<APIGatewayProxyResult> => {
     Text: 'Hey, how are you going?',
   })
 
-  const translation: any = await translateClient.send(command as any)
+  const translation: any = await AWSTranslateClient.send(command as any)
 
   return {
     statusCode: 200,
