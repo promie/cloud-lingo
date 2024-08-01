@@ -1,8 +1,8 @@
 {
-  "name": "sample-app",
+  "name": "cloud-lingo",
   "version": "0.1.0",
   "bin": {
-    "sample-app": "bin/sample-app.js"
+    "cloud-lingo": "bin/cloud-lingo.js"
   },
   "scripts": {
     "build": "tsc",
