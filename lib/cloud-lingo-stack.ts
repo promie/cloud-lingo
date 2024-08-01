@@ -3,6 +3,7 @@ import { RestApi, LambdaIntegration } from 'aws-cdk-lib/aws-apigateway'
 import { Construct } from 'constructs'
 import { Runtime } from 'aws-cdk-lib/aws-lambda'
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs'
+import { PolicyStatement } from 'aws-cdk-lib/aws-iam'
 
 export class CloudLingoStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -20,7 +21,16 @@ export class CloudLingoStack extends cdk.Stack {
       'translateLambda',
       'src/getTranslation.ts',
     )
+
+    // A policy that gets attached to the lambda function allowing it to use the Translate service
+    const translateAccessPolicy = new PolicyStatement({
+      actions: ['translate:TranslateText'],
+      resources: ['*'],
+    })
+
     apiResource.addMethod('GET', new LambdaIntegration(getTranslationFunction))
+    // Attach the policy to the lambda function
+    getTranslationFunction.role?.addToPrincipalPolicy(translateAccessPolicy)
   }
 
   createLambda = (name: string, path: string) => {

@@ -15,14 +15,12 @@ export const handler = async (): Promise<APIGatewayProxyResult> => {
     Text: 'Hey, how are you going?',
   })
 
-  const translation = await translateClient.send(command as any)
-
-  console.log('Translation:', translation)
+  const translation: any = await translateClient.send(command as any)
 
   return {
     statusCode: 200,
     body: JSON.stringify({
-      message: 'Hello, World!',
+      message: translation.TranslatedText,
     }),
   }
 }
