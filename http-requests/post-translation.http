@@ -3,6 +3,6 @@ Content-Type: application/json
 
 {
   "sourceLang": "en",
-  "targetLang": "es",
+  "targetLang": "th",
   "text": "Nice to meet you"
 }

@@ -14,24 +14,33 @@ interface IPostTranslationRequest {
 export const handler = async (
   event: APIGatewayProxyEvent,
 ): Promise<APIGatewayProxyResult> => {
-  const { sourceLang, targetLang, text } = JSON.parse(
-    event.body!,
-  ) as IPostTranslationRequest
+  try {
+    const { sourceLang, targetLang, text } = JSON.parse(
+      event.body!,
+    ) as IPostTranslationRequest
 
-  const command = new TranslateTextCommand({
-    SourceLanguageCode: sourceLang,
-    TargetLanguageCode: targetLang,
-    Text: text,
-  })
+    const command = new TranslateTextCommand({
+      SourceLanguageCode: sourceLang,
+      TargetLanguageCode: targetLang,
+      Text: text,
+    })
 
-  const translation: TranslateTextCommandOutput = await AWSTranslateClient.send(
-    command as any,
-  )
+    const translation: TranslateTextCommandOutput =
+      await AWSTranslateClient.send(command as any)
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: translation.TranslatedText,
-    }),
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        message: translation.TranslatedText,
+      }),
+    }
+  } catch (error) {
+    console.error('Error translating text:', error)
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        message: 'Internal Server Error',
+      }),
+    }
   }
 }
