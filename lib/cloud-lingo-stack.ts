@@ -13,7 +13,7 @@ export class CloudLingoStack extends cdk.Stack {
       restApiName: 'Cloud Lingo Service',
     })
 
-    const apiResource = api.root.addResource('translate')
+    const apiResource = api.root.addResource('translation')
 
     // Lambda Functions
     const getTranslationFunction = this.createLambda(
