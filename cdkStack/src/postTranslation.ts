@@ -5,6 +5,7 @@ import {
 } from '@aws-sdk/client-translate'
 import { AWSTranslateClient } from './lib/translate'
 import { translationRequestSchema } from './schema'
+import { defaultHeaders } from './utils/headers'
 
 interface IPostTranslationRequest {
   sourceLang: string
@@ -22,6 +23,7 @@ export const handler = async (
         body: JSON.stringify({
           message: 'Body is required',
         }),
+        headers: defaultHeaders,
       }
     }
 
@@ -35,6 +37,7 @@ export const handler = async (
           message: 'Invalid request body',
           errors: validationResult.error.errors,
         }),
+        headers: defaultHeaders,
       }
     }
 
@@ -57,6 +60,7 @@ export const handler = async (
         timestamp: new Date().toISOString(),
         text: translation.TranslatedText,
       }),
+      headers: defaultHeaders,
     }
   } catch (error) {
     console.error('Error translating text:', error)
@@ -65,6 +69,7 @@ export const handler = async (
       body: JSON.stringify({
         message: 'Internal Server Error',
       }),
+      headers: defaultHeaders,
     }
   }
 }
