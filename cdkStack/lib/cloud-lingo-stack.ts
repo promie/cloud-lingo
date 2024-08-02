@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib'
-import { RestApi, LambdaIntegration } from 'aws-cdk-lib/aws-apigateway'
+import { Cors, RestApi, LambdaIntegration } from 'aws-cdk-lib/aws-apigateway'
 import { Construct } from 'constructs'
 import { Runtime } from 'aws-cdk-lib/aws-lambda'
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs'
@@ -12,6 +12,11 @@ export class CloudLingoStack extends cdk.Stack {
     // API Gateway
     const api = new RestApi(this, 'cloudLingoApi', {
       restApiName: 'Cloud Lingo Service',
+      defaultCorsPreflightOptions: {
+        allowOrigins: Cors.ALL_ORIGINS,
+        allowMethods: Cors.ALL_METHODS,
+        allowHeaders: Cors.DEFAULT_HEADERS,
+      },
     })
 
     const apiResource = api.root.addResource('translation')
