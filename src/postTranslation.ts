@@ -54,7 +54,8 @@ export const handler = async (
     return {
       statusCode: 200,
       body: JSON.stringify({
-        message: translation.TranslatedText,
+        timestamp: new Date().toISOString(),
+        text: translation.TranslatedText,
       }),
     }
   } catch (error) {
