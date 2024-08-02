@@ -1,6 +1,7 @@
 import { ReactNode } from 'react'
 import type { Metadata } from "next";
 import "./globals.css";
+import QueryClientProvider from "@/providers/QueryClientProvider";
 
 export const metadata: Metadata = {
   title: "Cloud Lingo",
@@ -14,7 +15,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+     <QueryClientProvider>
+       <body>{children}</body>
+     </QueryClientProvider>
     </html>
   );
 }
