@@ -8,7 +8,7 @@ interface QueryClientProviderProps {
   children: ReactNode
 }
 
-const QueryClientProvider: FC<QueryClientProviderProps> = ({ children }) => {
+const ReactQueryClientProvider: FC<QueryClientProviderProps> = ({ children }) => {
   const [queryClient] = useState(() => new QueryClient())
 
   return (
@@ -19,4 +19,4 @@ const QueryClientProvider: FC<QueryClientProviderProps> = ({ children }) => {
   )
 }
 
-export default QueryClientProvider
+export default ReactQueryClientProvider

@@ -1,9 +1,10 @@
 import { FC } from 'react'
+import TranslationForm from '@/components/TranslationForm'
 
-const HomePage:FC = () => {
+const Home:FC = () => {
   return(
-    <div>This is the page for Language Lingo!</div>
+    <TranslationForm />
   )
 }
 
-export default HomePage
+export default Home
