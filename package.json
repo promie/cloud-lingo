@@ -11,5 +11,8 @@
     "apps/*",
     "infrastructure",
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "@cl/shared-types": "*"
+  }
 }

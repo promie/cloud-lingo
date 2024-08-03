@@ -3,15 +3,10 @@ import {
   TranslateTextCommand,
   TranslateTextCommandOutput,
 } from '@aws-sdk/client-translate'
+import { ITranslateRequest, ITranslateResponse } from '@cl/shared-types'
 import { AWSTranslateClient } from './lib/translate'
 import { translationRequestSchema } from './schema'
 import { defaultHeaders } from './utils/headers'
-
-interface IPostTranslationRequest {
-  sourceLang: string
-  targetLang: string
-  text: string
-}
 
 export const handler = async (
   event: APIGatewayProxyEvent,
@@ -41,14 +36,14 @@ export const handler = async (
       }
     }
 
-    const { sourceLang, targetLang, text } = JSON.parse(
+    const { sourceLang, targetLang, sourceText } = JSON.parse(
       event.body!,
-    ) as IPostTranslationRequest
+    ) as ITranslateRequest
 
     const command = new TranslateTextCommand({
       SourceLanguageCode: sourceLang,
       TargetLanguageCode: targetLang,
-      Text: text,
+      Text: sourceText,
     })
 
     const translation: TranslateTextCommandOutput =
@@ -59,7 +54,7 @@ export const handler = async (
       body: JSON.stringify({
         timestamp: new Date().toISOString(),
         text: translation.TranslatedText,
-      }),
+      } as ITranslateResponse),
       headers: defaultHeaders,
     }
   } catch (error) {
