@@ -1,0 +1,15 @@
+{
+  "name": "cloud-lingo",
+  "scripts": {
+    "dev:ui": "npm run dev --workspace=@cl/frontend",
+    "deploy": "cd infrastructure; npm run deploy",
+    "clean": "find . -name node_modules -type d -prune -exec rm -rf '{}' +"
+  },
+  "author": "Promie Yutasane",
+  "license": "ISC",
+  "workspaces": [
+    "apps/*",
+    "infrastructure",
+    "packages/*"
+  ]
+}
