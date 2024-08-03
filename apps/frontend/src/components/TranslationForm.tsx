@@ -1,29 +1,29 @@
-'use client'
+"use client";
 
-import { FC, useState } from 'react'
-import { useTranslateText } from '@/hooks/useTranslateText'
+import { FC, useState } from "react";
+import { useTranslateText } from "@/hooks/useTranslateText";
 
 const TranslationForm: FC = () => {
-  const [inputText, setInputText] = useState('')
-  const [inputLang, setInputLang] = useState('')
-  const [outputLang, setOutputLang] = useState('')
-  const [translatedText, setTranslatedText] = useState('')
+  const [inputText, setInputText] = useState("");
+  const [inputLang, setInputLang] = useState("");
+  const [outputLang, setOutputLang] = useState("");
+  const [translatedText, setTranslatedText] = useState("");
 
-  const { mutate: translateText, isLoading, isError } = useTranslateText()
+  const { mutate: translateText, isError } = useTranslateText();
 
   const handleTranslate = () => {
     translateText(
-      { sourceLang: inputLang, targetLang: outputLang, text: inputText },
+      { sourceLang: inputLang, targetLang: outputLang, sourceText: inputText },
       {
         onSuccess: (data) => {
-          setTranslatedText(data)
+          setTranslatedText(data as any);
         },
         onError: (error) => {
-          console.error('Translation error:', error)
-        }
-      }
-    )
-  }
+          console.error("Translation error:", error);
+        },
+      },
+    );
+  };
 
   return (
     <div className="space-y-4">
@@ -63,13 +63,14 @@ const TranslationForm: FC = () => {
       <button
         className="btn btn-active btn-primary"
         onClick={handleTranslate}
-        disabled={isLoading}
       >
-        {isLoading ? 'Translating...' : 'Translate'}
+        Translate
       </button>
 
       {isError && (
-        <div className="text-red-500">An error occurred during translation.</div>
+        <div className="text-red-500">
+          An error occurred during translation.
+        </div>
       )}
 
       {translatedText && (
@@ -79,7 +80,7 @@ const TranslationForm: FC = () => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default TranslationForm
+export default TranslationForm;

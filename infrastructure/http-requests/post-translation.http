@@ -4,7 +4,7 @@ Content-Type: application/json
 {
   "sourceLang": "en",
   "targetLang": "th",
-  "text": "Nice to meet you"
+  "sourceText": "Nice to meet you"
 }
 
 ###
