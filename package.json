@@ -1,0 +1,13 @@
+{
+  "name": "cloud-lingo",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Promie Yutasane",
+  "license": "ISC",
+  "workspaces": [
+    "apps/*",
+    "infrastructure/*",
+    "packages/*"
+  ]
+}

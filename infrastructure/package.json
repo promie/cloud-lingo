@@ -1,5 +1,5 @@
 {
-  "name": "cloud-lingo",
+  "name": "@cl/infrastructure",
   "version": "0.1.0",
   "bin": {
     "cloud-lingo": "bin/cloud-lingo.js"
