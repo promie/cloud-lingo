@@ -1,13 +1,13 @@
 {
   "name": "cloud-lingo",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "clean": "find . -name node_modules -type d -prune -exec rm -rf '{}' +"
   },
   "author": "Promie Yutasane",
   "license": "ISC",
   "workspaces": [
     "apps/*",
-    "infrastructure/*",
+    "infrastructure",
     "packages/*"
   ]
 }
