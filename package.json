@@ -5,7 +5,8 @@
     "deploy": "cd infrastructure; npm run deploy",
     "clean": "find . -name node_modules -type d -prune -exec rm -rf '{}' +",
     "prettier:check": "prettier --check \"./**/*.{js,ts,json}\"",
-    "prettier:write": "prettier --write \"./**/*.{js,ts,json}\""
+    "prettier:write": "prettier --write \"./**/*.{js,ts,json}\"",
+    "prepare": "husky install"
   },
   "author": "Promie Yutasane",
   "license": "ISC",
@@ -26,6 +27,14 @@
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-n": "^16.6.2",
     "eslint-plugin-promise": "^6.6.0",
+    "husky": "^8.0.0",
+    "lint-staged": "^15.2.8",
     "prettier": "^3.3.3"
+  },
+  "lint-staged": {
+    "*.{js,ts,jsx,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
   }
 }
