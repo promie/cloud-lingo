@@ -3,7 +3,9 @@
   "scripts": {
     "dev:ui": "npm run dev --workspace=@cl/frontend",
     "deploy": "cd infrastructure; npm run deploy",
-    "clean": "find . -name node_modules -type d -prune -exec rm -rf '{}' +"
+    "clean": "find . -name node_modules -type d -prune -exec rm -rf '{}' +",
+    "prettier:check": "prettier --check \"./**/*.{js,ts,json}\"",
+    "prettier:write": "prettier --write \"./**/*.{js,ts,json}\""
   },
   "author": "Promie Yutasane",
   "license": "ISC",
