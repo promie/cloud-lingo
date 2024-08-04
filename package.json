@@ -13,7 +13,7 @@
   "workspaces": [
     "apps/*",
     "infrastructure",
-    "packages/*"
+    "packages/**"
   ],
   "dependencies": {
     "@cl/shared-types": "*"
