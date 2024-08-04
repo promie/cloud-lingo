@@ -1,29 +1,29 @@
-"use client";
+'use client'
 
-import { FC, useState } from "react";
-import { useTranslateText } from "@/hooks/useTranslateText";
+import { FC, useState } from 'react'
+import { useTranslateText } from '@/hooks/useTranslateText'
 
 const TranslationForm: FC = () => {
-  const [inputText, setInputText] = useState("");
-  const [inputLang, setInputLang] = useState("");
-  const [outputLang, setOutputLang] = useState("");
-  const [translatedText, setTranslatedText] = useState("");
+  const [inputText, setInputText] = useState('')
+  const [inputLang, setInputLang] = useState('')
+  const [outputLang, setOutputLang] = useState('')
+  const [translatedText, setTranslatedText] = useState('')
 
-  const { mutate: translateText, isError } = useTranslateText();
+  const { mutate: translateText, isError } = useTranslateText()
 
   const handleTranslate = () => {
     translateText(
       { sourceLang: inputLang, targetLang: outputLang, sourceText: inputText },
       {
-        onSuccess: (data) => {
-          setTranslatedText(data as any);
+        onSuccess: data => {
+          setTranslatedText(data as any)
         },
-        onError: (error) => {
-          console.error("Translation error:", error);
+        onError: error => {
+          console.error('Translation error:', error)
         },
       },
-    );
-  };
+    )
+  }
 
   return (
     <div className="space-y-4">
@@ -35,7 +35,7 @@ const TranslationForm: FC = () => {
           type="text"
           className="input input-bordered w-full max-w-xs"
           value={inputText}
-          onChange={(e) => setInputText(e.target.value)}
+          onChange={e => setInputText(e.target.value)}
         />
       </label>
       <label className="form-control w-full max-w-xs">
@@ -46,7 +46,7 @@ const TranslationForm: FC = () => {
           type="text"
           className="input input-bordered w-full max-w-xs"
           value={inputLang}
-          onChange={(e) => setInputLang(e.target.value)}
+          onChange={e => setInputLang(e.target.value)}
         />
       </label>
       <label className="form-control w-full max-w-xs">
@@ -57,13 +57,10 @@ const TranslationForm: FC = () => {
           type="text"
           className="input input-bordered w-full max-w-xs"
           value={outputLang}
-          onChange={(e) => setOutputLang(e.target.value)}
+          onChange={e => setOutputLang(e.target.value)}
         />
       </label>
-      <button
-        className="btn btn-active btn-primary"
-        onClick={handleTranslate}
-      >
+      <button className="btn btn-active btn-primary" onClick={handleTranslate}>
         Translate
       </button>
 
@@ -80,7 +77,7 @@ const TranslationForm: FC = () => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default TranslationForm;
+export default TranslationForm
