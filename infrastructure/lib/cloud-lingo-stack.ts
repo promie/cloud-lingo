@@ -15,8 +15,8 @@ export class CloudLingoStack extends cdk.Stack {
     const lambdaDirPath = path.join(projectRoot, 'packages/lambdas')
 
     // DynamoDB construct goes here
-    const table = new Table(this, 'translations', {
-      tableName: 'translations',
+    const table = new Table(this, 'translationsTable', {
+      tableName: 'translationsTable',
       partitionKey: {
         name: 'requestId',
         type: AttributeType.STRING,
