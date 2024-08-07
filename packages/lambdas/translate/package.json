@@ -5,7 +5,9 @@
   "author": "Promie Yutasane",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.624.0",
     "@aws-sdk/client-translate": "^3.621.0",
+    "@aws-sdk/lib-dynamodb": "^3.624.0",
     "@cl/shared-types": "*"
   },
   "devDependencies": {
