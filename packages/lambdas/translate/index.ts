@@ -1,15 +1,25 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
+import {
+  APIGatewayProxyEvent,
+  APIGatewayProxyResult,
+  Context,
+} from 'aws-lambda'
 import {
   TranslateTextCommand,
   TranslateTextCommandOutput,
 } from '@aws-sdk/client-translate'
-import { ITranslateRequest, ITranslateResponse } from '@cl/shared-types'
+import {
+  ITranslateRequest,
+  ITranslateResponse,
+  ITranslateDbObject,
+} from '@cl/shared-types'
 import { AWSTranslateClient } from './lib/translate'
 import { translationRequestSchema } from './schema'
 import { defaultHeaders } from './utils/headers'
+import { saveTranslation } from './services/translateService'
 
 export const handler = async (
   event: APIGatewayProxyEvent,
+  context?: Context,
 ): Promise<APIGatewayProxyResult> => {
   try {
     if (!event.body) {
@@ -48,6 +58,15 @@ export const handler = async (
 
     const translation: TranslateTextCommandOutput =
       await AWSTranslateClient.send(command as any)
+
+    const dbObject: ITranslateDbObject = {
+      requestId: context?.awsRequestId,
+      ...parsedBody,
+      timestamp: new Date().toISOString(),
+      text: translation.TranslatedText,
+    }
+
+    await saveTranslation(dbObject)
 
     return {
       statusCode: 200,
