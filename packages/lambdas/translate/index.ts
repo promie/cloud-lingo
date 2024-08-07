@@ -3,19 +3,15 @@ import {
   APIGatewayProxyResult,
   Context,
 } from 'aws-lambda'
-import {
-  TranslateTextCommand,
-  TranslateTextCommandOutput,
-} from '@aws-sdk/client-translate'
+import { TranslateTextCommandOutput } from '@aws-sdk/client-translate'
 import {
   ITranslateRequest,
   ITranslateResponse,
   ITranslateDbObject,
 } from '@cl/shared-types'
-import { AWSTranslateClient } from './lib/translate'
 import { translationRequestSchema } from './schema'
 import { defaultHeaders } from './utils/headers'
-import { saveTranslation } from './services/translateService'
+import { translateText, saveTranslation } from './services/translateService'
 
 export const handler = async (
   event: APIGatewayProxyEvent,
@@ -50,14 +46,8 @@ export const handler = async (
       event.body!,
     ) as ITranslateRequest
 
-    const command = new TranslateTextCommand({
-      SourceLanguageCode: sourceLang,
-      TargetLanguageCode: targetLang,
-      Text: sourceText,
-    })
-
-    const translation: TranslateTextCommandOutput =
-      await AWSTranslateClient.send(command as any)
+    const translation: Partial<TranslateTextCommandOutput> =
+      await translateText(sourceLang, targetLang, sourceText)
 
     const dbObject: ITranslateDbObject = {
       requestId: context?.awsRequestId,
