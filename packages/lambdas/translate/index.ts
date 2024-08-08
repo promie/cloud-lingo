@@ -77,3 +77,15 @@ export const translate = async (
     }
   }
 }
+
+export const getTranslations = async (
+  event: APIGatewayProxyEvent,
+): Promise<APIGatewayProxyResult> => {
+  console.info('event', event)
+
+  return {
+    statusCode: 200,
+    body: 'Hello Worldy',
+    headers: defaultHeaders,
+  }
+}

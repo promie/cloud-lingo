@@ -51,15 +51,27 @@ export class CloudLingoStack extends cdk.Stack {
       PARTITION_KEY,
     )
 
+    const getTranslationsFunction = this.createLambda(
+      'getTranslationsLambda',
+      translateLambdaPath,
+      'getTranslations',
+      TABLE_NAME,
+      PARTITION_KEY,
+    )
+
     // Attach the policy to the dynamoDB table with the lambda function
     postTranslationFunction.role?.addToPrincipalPolicy(translateTablePolicy)
+    postTranslationFunction.role?.addToPrincipalPolicy(translateAccessPolicy)
 
+    getTranslationsFunction.role?.addToPrincipalPolicy(translateTablePolicy)
+
+    // API Gateway Methods
     apiResource.addMethod(
       'POST',
       new LambdaIntegration(postTranslationFunction),
     )
-    // Attach the policy to the lambda function
-    postTranslationFunction.role?.addToPrincipalPolicy(translateAccessPolicy)
+
+    apiResource.addMethod('GET', new LambdaIntegration(getTranslationsFunction))
   }
 
   createLambda = (
