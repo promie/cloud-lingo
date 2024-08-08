@@ -5,7 +5,7 @@ import { Construct } from 'constructs'
 import { Runtime } from 'aws-cdk-lib/aws-lambda'
 import { AttributeType, Table } from 'aws-cdk-lib/aws-dynamodb'
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs'
-import { PolicyStatement } from 'aws-cdk-lib/aws-iam'
+import { translateAccessPolicy } from './policies'
 
 const PARTITION_KEY = 'requestId'
 const TABLE_NAME = 'translationsTable'
@@ -52,12 +52,6 @@ export class CloudLingoStack extends cdk.Stack {
 
     // Grant the lambda function read/write permissions to the DynamoDB table
     table.grantReadWriteData(postTranslationFunction)
-
-    // A policy that gets attached to the lambda function allowing it to use the Translate service
-    const translateAccessPolicy = new PolicyStatement({
-      actions: ['translate:TranslateText'],
-      resources: ['*'],
-    })
 
     apiResource.addMethod(
       'POST',
