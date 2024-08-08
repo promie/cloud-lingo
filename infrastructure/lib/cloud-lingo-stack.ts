@@ -46,6 +46,7 @@ export class CloudLingoStack extends cdk.Stack {
     const postTranslationFunction = this.createLambda(
       'translateLambda',
       translateLambdaPath,
+      'translate',
       TABLE_NAME,
       PARTITION_KEY,
     )
@@ -64,6 +65,7 @@ export class CloudLingoStack extends cdk.Stack {
   createLambda = (
     name: string,
     path: string,
+    handler: string,
     tableName: string,
     partitionKey: string,
   ) => {
@@ -71,6 +73,7 @@ export class CloudLingoStack extends cdk.Stack {
       functionName: name,
       runtime: Runtime.NODEJS_20_X,
       entry: path,
+      handler,
       environment: {
         TABLE_NAME: tableName,
         TRANSLATION_PARTITION_KEY: partitionKey,

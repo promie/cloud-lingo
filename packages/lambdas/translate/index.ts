@@ -13,7 +13,7 @@ import { translationRequestSchema } from './schema'
 import { defaultHeaders } from './utils/headers'
 import { translateText, saveTranslation } from './services/translateService'
 
-export const handler = async (
+export const translate = async (
   event: APIGatewayProxyEvent,
   context?: Context,
 ): Promise<APIGatewayProxyResult> => {
