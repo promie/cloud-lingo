@@ -2,14 +2,17 @@
 
 import { FC, useState } from 'react'
 import { useTranslateText } from '@/hooks/useTranslateText'
+import { useGetTranslations } from '@/hooks/useGetTranslations'
 
 const TranslationForm: FC = () => {
   const [inputText, setInputText] = useState('')
   const [inputLang, setInputLang] = useState('')
   const [outputLang, setOutputLang] = useState('')
   const [translatedText, setTranslatedText] = useState('')
+  const [translations, setTranslations] = useState([])
 
   const { mutate: translateText, isError } = useTranslateText()
+  const { data: fetchedTranslations, refetch } = useGetTranslations()
 
   const handleTranslate = () => {
     translateText(
@@ -23,6 +26,11 @@ const TranslationForm: FC = () => {
         },
       },
     )
+  }
+
+  const handleGetTranslations = async () => {
+    await refetch()
+    setTranslations(fetchedTranslations || [])
   }
 
   return (
@@ -74,6 +82,24 @@ const TranslationForm: FC = () => {
         <div className="mt-4">
           <h3 className="font-bold">Translated Text:</h3>
           <p>{JSON.stringify(translatedText)}</p>
+        </div>
+      )}
+
+      <button
+        className="btn btn-active btn-secondary ml-[10px]"
+        onClick={handleGetTranslations}
+      >
+        Get Translations
+      </button>
+
+      {translations.length > 0 && (
+        <div className="mt-4">
+          <h3 className="font-bold">Translations:</h3>
+          <ul>
+            {translations.map((translation, index) => (
+              <li key={index}>{JSON.stringify(translation)}</li>
+            ))}
+          </ul>
         </div>
       )}
     </div>
