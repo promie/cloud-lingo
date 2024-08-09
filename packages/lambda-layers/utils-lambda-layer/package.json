@@ -1,0 +1,13 @@
+{
+  "name": "@cl/utils-lambda-layer",
+  "version": "1.0.0",
+  "main": "./nodejs/utils-lambda-layer/index.js",
+  "types": "./nodejs/utils-lambda-layer/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch"
+  },
+  "keywords": [],
+  "author": "Promie Yutasane",
+  "license": "ISC"
+}
