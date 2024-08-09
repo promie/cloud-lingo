@@ -9,5 +9,8 @@
   },
   "keywords": [],
   "author": "Promie Yutasane",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@types/aws-lambda": "^8.10.142"
+  }
 }
