@@ -1,5 +1,8 @@
 import axios from 'axios'
-import { ITranslateResponse } from '@cl/shared-types'
+import { ITranslateResponse, ITranslateDbObject } from '@cl/shared-types'
+
+const BASE_URL =
+  'https://iupvewrwqe.execute-api.ap-southeast-2.amazonaws.com/prod'
 
 const translateText = async (
   sourceLang: string,
@@ -7,14 +10,11 @@ const translateText = async (
   sourceText: string,
 ): Promise<ITranslateResponse> => {
   try {
-    const response = await axios.post(
-      'https://iupvewrwqe.execute-api.ap-southeast-2.amazonaws.com/prod/translation',
-      {
-        sourceLang,
-        targetLang,
-        sourceText,
-      },
-    )
+    const response = await axios.post(`${BASE_URL}/translation`, {
+      sourceLang,
+      targetLang,
+      sourceText,
+    })
     return response.data
   } catch (error) {
     console.error('Error translating text:', error)
@@ -22,4 +22,14 @@ const translateText = async (
   }
 }
 
-export { translateText }
+const getTranslations = async (): Promise<ITranslateDbObject[]> => {
+  try {
+    const response = await axios.get(`${BASE_URL}/translation`)
+    return response.data
+  } catch (error) {
+    console.error('Error getting translations:', error)
+    throw error
+  }
+}
+
+export { translateText, getTranslations }

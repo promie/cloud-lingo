@@ -33,14 +33,14 @@ const saveTranslation = async (translation: ITranslateDbObject) => {
   )
 }
 
-const getAllTranslations = async () => {
+const getAllTranslations = async (): Promise<ITranslateDbObject[]> => {
   const { Items } = await DocumentClient.send(
     new ScanCommand({
       TableName: TABLE_NAME,
     } as ScanCommandInput),
   )
 
-  return Items
+  return Items as ITranslateDbObject[]
 }
 
 export { translateText, saveTranslation, getAllTranslations }
