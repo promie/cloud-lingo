@@ -11,7 +11,11 @@ import {
 } from '@cl/shared-types'
 import { translationRequestSchema } from './schema'
 import { defaultHeaders } from './utils/headers'
-import { translateText, saveTranslation } from './services/translateService'
+import {
+  translateText,
+  saveTranslation,
+  getAllTranslations,
+} from './services/translateService'
 
 export const translate = async (
   event: APIGatewayProxyEvent,
@@ -78,14 +82,12 @@ export const translate = async (
   }
 }
 
-export const getTranslations = async (
-  event: APIGatewayProxyEvent,
-): Promise<APIGatewayProxyResult> => {
-  console.info('event', event)
+export const getTranslations = async (): Promise<APIGatewayProxyResult> => {
+  const translations = await getAllTranslations()
 
   return {
     statusCode: 200,
-    body: 'Hello Worldy',
+    body: JSON.stringify(translations),
     headers: defaultHeaders,
   }
 }

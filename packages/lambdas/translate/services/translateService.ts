@@ -1,4 +1,8 @@
-import { PutCommand } from '@aws-sdk/lib-dynamodb'
+import {
+  PutCommand,
+  ScanCommand,
+  ScanCommandInput,
+} from '@aws-sdk/lib-dynamodb'
 import { TranslateTextCommand } from '@aws-sdk/client-translate'
 import { DocumentClient } from '../lib/dynamodb'
 import { ITranslateDbObject } from '@cl/shared-types'
@@ -29,4 +33,14 @@ const saveTranslation = async (translation: ITranslateDbObject) => {
   )
 }
 
-export { translateText, saveTranslation }
+const getAllTranslations = async () => {
+  const { Items } = await DocumentClient.send(
+    new ScanCommand({
+      TableName: TABLE_NAME,
+    } as ScanCommandInput),
+  )
+
+  return Items
+}
+
+export { translateText, saveTranslation, getAllTranslations }
