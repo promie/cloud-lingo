@@ -103,6 +103,9 @@ export class CloudLingoStack extends cdk.Stack {
       entry: path,
       layers: layers ? [layers] : [],
       handler,
+      bundling: {
+        externalModules: ['/opt/nodejs/utils-lambda-layer'],
+      },
       environment: {
         TABLE_NAME: tableName,
         TRANSLATION_PARTITION_KEY: partitionKey,
