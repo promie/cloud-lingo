@@ -25,6 +25,6 @@ export const createSuccessResponse = (body: object) =>
 
 export const createErrorJsonResponse = (body: object) =>
   createGatewayResponse({
-    statusCode: 200,
+    statusCode: 500,
     body: JSON.stringify(body),
   })

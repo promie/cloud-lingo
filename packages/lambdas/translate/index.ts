@@ -16,7 +16,7 @@ import {
   saveTranslation,
   getAllTranslations,
 } from './services/translateService'
-
+import { gateway } from '/opt/nodejs/utils-lambda-layer'
 export const translate = async (
   event: APIGatewayProxyEvent,
   context?: Context,
@@ -62,32 +62,20 @@ export const translate = async (
 
     await saveTranslation(dbObject)
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        timestamp: new Date().toISOString(),
-        text: translation.TranslatedText,
-      } as ITranslateResponse),
-      headers: defaultHeaders,
-    }
+    return gateway.createSuccessResponse({
+      timestamp: new Date().toISOString(),
+      text: translation.TranslatedText,
+    } as ITranslateResponse)
   } catch (error) {
     console.error('Error translating text:', error)
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        message: 'Internal Server Error',
-      }),
-      headers: defaultHeaders,
-    }
+    return gateway.createErrorJsonResponse({
+      message: 'Internal Server Error',
+    })
   }
 }
 
 export const getTranslations = async (): Promise<APIGatewayProxyResult> => {
   const translations = await getAllTranslations()
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify(translations),
-    headers: defaultHeaders,
-  }
+  return gateway.createSuccessResponse(translations)
 }
