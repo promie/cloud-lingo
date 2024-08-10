@@ -2,7 +2,7 @@ import * as cdk from 'aws-cdk-lib'
 import * as path from 'path'
 import { Cors, LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway'
 import { Construct } from 'constructs'
-import { Runtime } from 'aws-cdk-lib/aws-lambda'
+import { Runtime, LayerVersion, Code } from 'aws-cdk-lib/aws-lambda'
 import { AttributeType, Table } from 'aws-cdk-lib/aws-dynamodb'
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs'
 import { translateAccessPolicy, translateTablePolicy } from './policies'
@@ -14,8 +14,10 @@ export class CloudLingoStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props)
 
+    // Project paths
     const projectRoot = '../'
     const lambdaDirPath = path.join(projectRoot, 'packages/lambdas')
+    const lambdaLayersDirPath = path.join(projectRoot, 'packages/lambda-layers')
 
     // DynamoDB construct goes here
     new Table(this, TABLE_NAME, {
@@ -24,6 +26,17 @@ export class CloudLingoStack extends cdk.Stack {
         name: PARTITION_KEY,
         type: AttributeType.STRING,
       },
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    })
+
+    // Lambda layer construct
+    const utilsLambdaLayerPath = path.resolve(
+      path.join(lambdaLayersDirPath, 'utils-lambda-layer'),
+    )
+
+    const utilsLambdaLayer = new LayerVersion(this, 'utilsLambdaLayer', {
+      code: Code.fromAsset(utilsLambdaLayerPath),
+      compatibleRuntimes: [Runtime.NODEJS_20_X],
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     })
 
@@ -47,6 +60,7 @@ export class CloudLingoStack extends cdk.Stack {
       'translateLambda',
       translateLambdaPath,
       'translate',
+      utilsLambdaLayer,
       TABLE_NAME,
       PARTITION_KEY,
     )
@@ -55,6 +69,7 @@ export class CloudLingoStack extends cdk.Stack {
       'getTranslationsLambda',
       translateLambdaPath,
       'getTranslations',
+      utilsLambdaLayer,
       TABLE_NAME,
       PARTITION_KEY,
     )
@@ -78,6 +93,7 @@ export class CloudLingoStack extends cdk.Stack {
     name: string,
     path: string,
     handler: string,
+    layers: LayerVersion | undefined,
     tableName: string,
     partitionKey: string,
   ) => {
@@ -85,6 +101,7 @@ export class CloudLingoStack extends cdk.Stack {
       functionName: name,
       runtime: Runtime.NODEJS_20_X,
       entry: path,
+      layers: layers ? [layers] : [],
       handler,
       environment: {
         TABLE_NAME: tableName,
