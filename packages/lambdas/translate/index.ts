@@ -14,20 +14,25 @@ import {
   saveTranslation,
   getAllTranslations,
 } from './services/translateService'
-import { gateway, translateText } from '/opt/nodejs/utils-lambda-layer'
+import {
+  gateway,
+  exception,
+  translateText,
+} from '/opt/nodejs/utils-lambda-layer'
+
+const { TABLE_NAME } = process.env
+
+if (!TABLE_NAME) {
+  throw new exception.MissingEnvVarError('TABLE_NAME')
+}
+
 export const translate = async (
   event: APIGatewayProxyEvent,
   context?: Context,
 ): Promise<APIGatewayProxyResult> => {
   try {
     if (!event.body) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          message: 'Body is required',
-        }),
-        headers: defaultHeaders,
-      }
+      throw new exception.MissingBodyError()
     }
 
     const parsedBody = JSON.parse(event.body)
