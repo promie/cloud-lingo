@@ -4,6 +4,7 @@
     "dev:ui": "npm run dev --workspace=@cl/frontend",
     "deploy": "cd infrastructure; npm run deploy",
     "build-utils-lambda-layer": "npm run build --workspace=@cl/utils-lambda-layer",
+    "watch-utils-lambda-layer": "npm run watch --workspace=@cl/utils-lambda-layer",
     "clean": "find . -name node_modules -type d -prune -exec rm -rf '{}' +",
     "prettier:check": "prettier --check \"./**/*.{js,ts,tsx,json}\"",
     "prettier:write": "prettier --write \"./**/*.{js,ts,tsx,json}\"",
