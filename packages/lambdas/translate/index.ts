@@ -11,20 +11,26 @@ import {
 import { translationRequestSchema } from './schema'
 import { defaultHeaders } from './utils/headers'
 import {
-  saveTranslation,
-  getAllTranslations,
-} from './services/translateService'
-import {
   gateway,
   exception,
   translateText,
+  TranslationTable,
 } from '/opt/nodejs/utils-lambda-layer'
 
-const { TABLE_NAME } = process.env
+const { TABLE_NAME, TRANSLATION_PARTITION_KEY } = process.env
 
 if (!TABLE_NAME) {
   throw new exception.MissingEnvVarError('TABLE_NAME')
 }
+
+if (!TRANSLATION_PARTITION_KEY) {
+  throw new exception.MissingEnvVarError('TRANSLATION_PARTITION_KEY')
+}
+
+const translationTable = new TranslationTable({
+  tableName: TABLE_NAME,
+  partitionKey: TRANSLATION_PARTITION_KEY,
+})
 
 export const translate = async (
   event: APIGatewayProxyEvent,
@@ -66,7 +72,7 @@ export const translate = async (
       text: translation.TranslatedText,
     }
 
-    await saveTranslation(dbObject)
+    await translationTable.saveTranslation(dbObject)
 
     return gateway.createSuccessResponse({
       timestamp: new Date().toISOString(),
@@ -81,7 +87,7 @@ export const translate = async (
 }
 
 export const getTranslations = async (): Promise<APIGatewayProxyResult> => {
-  const translations = await getAllTranslations()
+  const translations = await translationTable.getAllTranslations()
 
   return gateway.createSuccessResponse(translations)
 }
