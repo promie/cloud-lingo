@@ -11,6 +11,8 @@
   "author": "Promie Yutasane",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.624.0",
+    "@aws-sdk/util-dynamodb": "^3.624.0",
     "@types/aws-lambda": "^8.10.142"
   }
 }
