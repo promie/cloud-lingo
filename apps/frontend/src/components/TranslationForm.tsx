@@ -3,13 +3,14 @@
 import { FC, useState } from 'react'
 import { useTranslateText } from '@/hooks/useTranslateText'
 import { useGetTranslations } from '@/hooks/useGetTranslations'
+import { ITranslateResponse } from '@cl/shared-types'
 
 const TranslationForm: FC = () => {
   const [inputText, setInputText] = useState('')
   const [inputLang, setInputLang] = useState('')
   const [outputLang, setOutputLang] = useState('')
   const [translatedText, setTranslatedText] = useState('')
-  const [translations, setTranslations] = useState([])
+  const [translations, setTranslations] = useState<any>([])
 
   const { mutate: translateText, isError } = useTranslateText()
   const { data: fetchedTranslations, refetch } = useGetTranslations()
@@ -96,9 +97,11 @@ const TranslationForm: FC = () => {
         <div className="mt-4">
           <h3 className="font-bold">Translations:</h3>
           <ul>
-            {translations.map((translation, index) => (
-              <li key={index}>{JSON.stringify(translation)}</li>
-            ))}
+            {translations.map(
+              (translation: ITranslateResponse, index: number) => (
+                <li key={index}>{JSON.stringify(translation)}</li>
+              ),
+            )}
           </ul>
         </div>
       )}
