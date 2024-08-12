@@ -2,7 +2,9 @@ import * as cdk from 'aws-cdk-lib'
 import * as path from 'path'
 import { Cors, LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway'
 import { Construct } from 'constructs'
-import { Runtime, LayerVersion, Code } from 'aws-cdk-lib/aws-lambda'
+import { Code, LayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda'
+import { Bucket } from 'aws-cdk-lib/aws-s3'
+import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment'
 import { AttributeType, Table } from 'aws-cdk-lib/aws-dynamodb'
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs'
 import { translateAccessPolicy, translateTablePolicy } from './policies'
@@ -87,6 +89,27 @@ export class CloudLingoStack extends cdk.Stack {
     )
 
     apiResource.addMethod('GET', new LambdaIntegration(getTranslationsFunction))
+
+    // S3 Bucket where the website site will reside
+    const bucket = new Bucket(this, 'cloudLingoBucket', {
+      websiteIndexDocument: 'index.html',
+      websiteErrorDocument: '404.html',
+      publicReadAccess: true,
+      blockPublicAccess: {
+        blockPublicAcls: false,
+        blockPublicPolicy: false,
+        ignorePublicAcls: false,
+        restrictPublicBuckets: false,
+      },
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    })
+
+    // S3 construct to deploy the website dist content
+    new BucketDeployment(this, 'cloudLingoBucketDeployment', {
+      destinationBucket: bucket,
+      sources: [Source.asset('../apps/frontend/dist')],
+    })
   }
 
   createLambda = (

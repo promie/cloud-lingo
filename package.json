@@ -2,6 +2,7 @@
   "name": "cloud-lingo",
   "scripts": {
     "dev:ui": "npm run dev --workspace=@cl/frontend",
+    "ui:build": "npm run build --workspace=@cl/frontend",
     "deploy": "cd infrastructure; npm run deploy",
     "build-utils-lambda-layer": "npm run build --workspace=@cl/utils-lambda-layer",
     "watch-utils-lambda-layer": "npm run watch --workspace=@cl/utils-lambda-layer",
