@@ -5,6 +5,7 @@ import { Construct } from 'constructs'
 import { Code, LayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda'
 import { Bucket } from 'aws-cdk-lib/aws-s3'
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment'
+import { CloudFrontWebDistribution } from 'aws-cdk-lib/aws-cloudfront'
 import { AttributeType, Table } from 'aws-cdk-lib/aws-dynamodb'
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs'
 import { translateAccessPolicy, translateTablePolicy } from './policies'
@@ -105,10 +106,28 @@ export class CloudLingoStack extends cdk.Stack {
       autoDeleteObjects: true,
     })
 
+    // Cloudfront distribution
+    const distro = new CloudFrontWebDistribution(
+      this,
+      'cloudLingoDistribution',
+      {
+        originConfigs: [
+          {
+            s3OriginSource: {
+              s3BucketSource: bucket,
+            },
+            behaviors: [{ isDefaultBehavior: true }],
+          },
+        ],
+      },
+    )
+
     // S3 construct to deploy the website dist content
     new BucketDeployment(this, 'cloudLingoBucketDeployment', {
       destinationBucket: bucket,
       sources: [Source.asset('../apps/frontend/dist')],
+      distribution: distro,
+      distributionPaths: ['/*'],
     })
   }
 
