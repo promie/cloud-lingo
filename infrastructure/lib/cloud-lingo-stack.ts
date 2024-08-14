@@ -129,6 +129,11 @@ export class CloudLingoStack extends cdk.Stack {
       distribution: distro,
       distributionPaths: ['/*'],
     })
+
+    new cdk.CfnOutput(this, 'cloudLingoWebUrl', {
+      exportName: 'cloudLingoWebUrl',
+      value: `https://${distro.distributionDomainName}`,
+    })
   }
 
   createLambda = (
