@@ -33,7 +33,7 @@ export class CloudLingoStack extends cdk.Stack {
 
     // Domain name
     const domain = 'pyutasane.com'
-    const fullUrl = `www.cloud-lingo.${domain}`
+    const fullUrl = `www.${domain}`
 
     // DynamoDB construct goes here
     new Table(this, TABLE_NAME, {
