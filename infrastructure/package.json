@@ -10,7 +10,7 @@
     "test": "jest",
     "cdk": "cdk",
     "deploy": "cdk deploy --require-approval=never",
-    "destroy": "cdk destroy --force",
+    "destroy": "cdk destroy --force --require-approval=never",
     "cdk:synth": "cdk synth"
   },
   "devDependencies": {
