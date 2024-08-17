@@ -1,4 +1,4 @@
-POST https://api.pyutasane.com
+POST https://cloud-lingo-api.pyutasane.com
 Content-Type: application/json
 
 {
@@ -9,7 +9,7 @@ Content-Type: application/json
 
 ###
 
-POST https://api.pyutasane.com
+POST https://cloud-lingo-api.pyutasane.com
 Content-Type: application/json
 
 {
@@ -19,5 +19,5 @@ Content-Type: application/json
 
 ###
 
-GET https://api.pyutasane.com
+GET https://cloud-lingo-api.pyutasane.com
 Content-Type: application/json

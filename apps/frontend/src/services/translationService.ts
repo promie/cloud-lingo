@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { ITranslateResponse, ITranslateDbObject } from '@cl/shared-types'
 
-const BASE_URL = 'https://api.pyutasane.com'
+const BASE_URL = 'https://cloud-lingo-api.pyutasane.com'
 
 const translateText = async (
   sourceLang: string,

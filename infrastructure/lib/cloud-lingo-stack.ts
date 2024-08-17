@@ -33,8 +33,8 @@ export class CloudLingoStack extends cdk.Stack {
 
     // Domain name
     const domain = 'pyutasane.com'
-    const fullUrl = `www.${domain}`
-    const apiUrl = `api.${domain}`
+    const cloudFrontUrl = `cloud-lingo.${domain}`
+    const apiUrl = `cloud-lingo-api.${domain}`
 
     // Fetch route53 hosted zone
     const zone = HostedZone.fromLookup(this, 'HostedZone', {
@@ -44,7 +44,7 @@ export class CloudLingoStack extends cdk.Stack {
     // Create a certificate for the domain
     const certificate = new Certificate(this, 'cloudLingoCertificate', {
       domainName: domain,
-      subjectAlternativeNames: [fullUrl, apiUrl],
+      subjectAlternativeNames: [cloudFrontUrl, apiUrl],
       validation: CertificateValidation.fromDns(zone),
     })
 
@@ -125,7 +125,7 @@ export class CloudLingoStack extends cdk.Stack {
     const viewerCertificate = ViewerCertificate.fromAcmCertificate(
       certificate,
       {
-        aliases: [domain, fullUrl],
+        aliases: [cloudFrontUrl],
       },
     )
 
@@ -177,13 +177,13 @@ export class CloudLingoStack extends cdk.Stack {
 
     new ARecord(this, 'route53FullUrl', {
       zone,
-      recordName: 'www',
+      recordName: 'cloud-lingo',
       target: RecordTarget.fromAlias(new CloudFrontTarget(distro)),
     })
 
     new ARecord(this, 'apiDns', {
       zone,
-      recordName: 'api',
+      recordName: 'cloud-lingo-api',
       target: RecordTarget.fromAlias(new ApiGateway(api)),
     })
 
