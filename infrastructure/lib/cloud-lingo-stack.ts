@@ -10,7 +10,7 @@ import {
   ViewerCertificate,
 } from 'aws-cdk-lib/aws-cloudfront'
 import { HostedZone, ARecord, RecordTarget } from 'aws-cdk-lib/aws-route53'
-import { CloudFrontTarget } from 'aws-cdk-lib/aws-route53-targets'
+import { CloudFrontTarget, ApiGateway } from 'aws-cdk-lib/aws-route53-targets'
 import {
   Certificate,
   CertificateValidation,
@@ -34,6 +34,19 @@ export class CloudLingoStack extends cdk.Stack {
     // Domain name
     const domain = 'pyutasane.com'
     const fullUrl = `www.${domain}`
+    const apiUrl = `api.${domain}`
+
+    // Fetch route53 hosted zone
+    const zone = HostedZone.fromLookup(this, 'HostedZone', {
+      domainName: domain,
+    })
+
+    // Create a certificate for the domain
+    const certificate = new Certificate(this, 'cloudLingoCertificate', {
+      domainName: domain,
+      subjectAlternativeNames: [fullUrl, apiUrl],
+      validation: CertificateValidation.fromDns(zone),
+    })
 
     // DynamoDB construct goes here
     new Table(this, TABLE_NAME, {
@@ -63,6 +76,10 @@ export class CloudLingoStack extends cdk.Stack {
         allowOrigins: Cors.ALL_ORIGINS,
         allowMethods: Cors.ALL_METHODS,
         allowHeaders: Cors.DEFAULT_HEADERS,
+      },
+      domainName: {
+        domainName: apiUrl,
+        certificate,
       },
     })
 
@@ -103,18 +120,6 @@ export class CloudLingoStack extends cdk.Stack {
     )
 
     apiResource.addMethod('GET', new LambdaIntegration(getTranslationsFunction))
-
-    // Fetch route53 hosted zone
-    const zone = HostedZone.fromLookup(this, 'HostedZone', {
-      domainName: domain,
-    })
-
-    // Create a certificate for the domain
-    const certificate = new Certificate(this, 'cloudLingoCertificate', {
-      domainName: domain,
-      subjectAlternativeNames: [fullUrl],
-      validation: CertificateValidation.fromDns(zone),
-    })
 
     // Viewer certificate
     const viewerCertificate = ViewerCertificate.fromAcmCertificate(
@@ -172,8 +177,14 @@ export class CloudLingoStack extends cdk.Stack {
 
     new ARecord(this, 'route53FullUrl', {
       zone,
-      recordName: fullUrl,
+      recordName: 'www',
       target: RecordTarget.fromAlias(new CloudFrontTarget(distro)),
+    })
+
+    new ARecord(this, 'apiDns', {
+      zone,
+      recordName: 'api',
+      target: RecordTarget.fromAlias(new ApiGateway(api)),
     })
 
     new cdk.CfnOutput(this, 'cloudLingoWebUrl', {
