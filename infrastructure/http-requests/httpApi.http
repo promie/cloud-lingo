@@ -1,4 +1,4 @@
-POST https://irte3wveff.execute-api.us-east-1.amazonaws.com/prod/translation
+POST https://api.pyutasane.com
 Content-Type: application/json
 
 {
@@ -9,7 +9,7 @@ Content-Type: application/json
 
 ###
 
-POST https://irte3wveff.execute-api.us-east-1.amazonaws.com/prod/translation
+POST https://api.pyutasane.com
 Content-Type: application/json
 
 {
@@ -19,5 +19,5 @@ Content-Type: application/json
 
 ###
 
-GET https://irte3wveff.execute-api.us-east-1.amazonaws.com/prod/translation
+GET https://api.pyutasane.com
 Content-Type: application/json
