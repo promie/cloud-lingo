@@ -22,7 +22,7 @@ import { translateAccessPolicy, translateTablePolicy } from './policies'
 const PARTITION_KEY = 'requestId'
 const TABLE_NAME = 'translationsTable'
 
-export class CloudLingoStack extends cdk.Stack {
+export class TranslatorService extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props)
 
