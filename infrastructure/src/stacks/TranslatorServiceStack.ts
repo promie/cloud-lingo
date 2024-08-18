@@ -1,7 +1,6 @@
 import * as cdk from 'aws-cdk-lib'
 import * as path from 'path'
 import { Construct } from 'constructs'
-import { Code, LayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda'
 import { Bucket } from 'aws-cdk-lib/aws-s3'
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment'
 import {
@@ -14,15 +13,9 @@ import {
   Certificate,
   CertificateValidation,
 } from 'aws-cdk-lib/aws-certificatemanager'
-import { AttributeType, Table } from 'aws-cdk-lib/aws-dynamodb'
-import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs'
-import { translateAccessPolicy, translateTablePolicy } from './policies'
-import { RestApiService } from '../constructs'
+import { RestApiService, TranslationService } from '../constructs'
 
-const PARTITION_KEY = 'requestId'
-const TABLE_NAME = 'translationsTable'
-
-export class TranslatorService extends cdk.Stack {
+export class TranslatorServiceStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props)
 
@@ -54,63 +47,10 @@ export class TranslatorService extends cdk.Stack {
       zone,
     })
 
-    // DynamoDB construct goes here
-    new Table(this, TABLE_NAME, {
-      tableName: TABLE_NAME,
-      partitionKey: {
-        name: PARTITION_KEY,
-        type: AttributeType.STRING,
-      },
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-    })
-
-    // Lambda layer construct
-    const utilsLambdaLayerPath = path.resolve(
-      path.join(lambdaLayersDirPath, 'utils-lambda-layer'),
-    )
-
-    const utilsLambdaLayer = new LayerVersion(this, 'utilsLambdaLayer', {
-      code: Code.fromAsset(utilsLambdaLayerPath),
-      compatibleRuntimes: [Runtime.NODEJS_20_X],
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-    })
-
-    const translateLambdaPath = path.resolve(
-      path.join(lambdaDirPath, 'translate/index.ts'),
-    )
-    // Lambda Functions
-    const postTranslationFunction = this.createLambda(
-      'translateLambda',
-      translateLambdaPath,
-      'translate',
-      utilsLambdaLayer,
-      TABLE_NAME,
-      PARTITION_KEY,
-    )
-
-    const getTranslationsFunction = this.createLambda(
-      'getTranslationsLambda',
-      translateLambdaPath,
-      'getTranslations',
-      utilsLambdaLayer,
-      TABLE_NAME,
-      PARTITION_KEY,
-    )
-
-    // Attach the policy to the dynamoDB table with the lambda function
-    postTranslationFunction.role?.addToPrincipalPolicy(translateTablePolicy)
-    postTranslationFunction.role?.addToPrincipalPolicy(translateAccessPolicy)
-
-    getTranslationsFunction.role?.addToPrincipalPolicy(translateTablePolicy)
-
-    restApi.addTranslateMethod({
-      httpMethod: 'POST',
-      lambda: postTranslationFunction,
-    })
-
-    restApi.addTranslateMethod({
-      httpMethod: 'GET',
-      lambda: getTranslationsFunction,
+    new TranslationService(this, 'translationService', {
+      lambdaDirPath,
+      lambdaLayersDirPath,
+      restApi,
     })
 
     // Viewer certificate
@@ -171,38 +111,6 @@ export class TranslatorService extends cdk.Stack {
       zone,
       recordName: 'cloud-lingo',
       target: RecordTarget.fromAlias(new CloudFrontTarget(distro)),
-    })
-
-    // new ARecord(this, 'apiDns', {
-    //   zone,
-    //   recordName: 'cloud-lingo-api',
-    //   target: RecordTarget.fromAlias(new ApiGateway(api)),
-    // })
-
-    new cdk.CfnOutput(this, 'cloudLingoWebUrl', {
-      exportName: 'cloudLingoWebUrl',
-      value: `https://${distro.distributionDomainName}`,
-    })
-  }
-
-  createLambda = (
-    name: string,
-    path: string,
-    handler: string,
-    layers: LayerVersion | undefined,
-    tableName: string,
-    partitionKey: string,
-  ) => {
-    return new NodejsFunction(this, name, {
-      functionName: name,
-      runtime: Runtime.NODEJS_20_X,
-      entry: path,
-      layers: layers ? [layers] : [],
-      handler,
-      environment: {
-        TABLE_NAME: tableName,
-        TRANSLATION_PARTITION_KEY: partitionKey,
-      },
     })
   }
 }
