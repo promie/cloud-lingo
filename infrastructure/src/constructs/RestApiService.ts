@@ -1,9 +1,10 @@
 import { Construct } from 'constructs'
 import { StackProps } from 'aws-cdk-lib'
-import { Cors, RestApi } from 'aws-cdk-lib/aws-apigateway'
+import { Cors, LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway'
 import { ARecord, RecordTarget, IHostedZone } from 'aws-cdk-lib/aws-route53'
 import { ApiGateway } from 'aws-cdk-lib/aws-route53-targets'
 import { Certificate } from 'aws-cdk-lib/aws-certificatemanager'
+import { IFunction } from 'aws-cdk-lib/aws-lambda'
 
 export interface IRestApiServiceProps extends StackProps {
   apiUrl: string
@@ -12,6 +13,8 @@ export interface IRestApiServiceProps extends StackProps {
 }
 
 export class RestApiService extends Construct {
+  public restApi: RestApi
+
   constructor(
     scope: Construct,
     id: string,
@@ -20,7 +23,7 @@ export class RestApiService extends Construct {
     super(scope, id)
 
     // API Gateway
-    const api = new RestApi(this, 'cloudLingoApi', {
+    this.restApi = new RestApi(this, 'cloudLingoApi', {
       restApiName: 'Cloud Lingo Service',
       defaultCorsPreflightOptions: {
         allowOrigins: Cors.ALL_ORIGINS,
@@ -36,7 +39,17 @@ export class RestApiService extends Construct {
     new ARecord(this, 'apiDns', {
       zone,
       recordName: 'cloud-lingo-api',
-      target: RecordTarget.fromAlias(new ApiGateway(api)),
+      target: RecordTarget.fromAlias(new ApiGateway(this.restApi)),
     })
+  }
+
+  addTranslateMethod({
+    httpMethod,
+    lambda,
+  }: {
+    httpMethod: string
+    lambda: IFunction
+  }) {
+    this.restApi.root.addMethod(httpMethod, new LambdaIntegration(lambda))
   }
 }
