@@ -1,6 +1,5 @@
 import * as cdk from 'aws-cdk-lib'
 import * as path from 'path'
-import { Cors, LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway'
 import { Construct } from 'constructs'
 import { Code, LayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda'
 import { Bucket } from 'aws-cdk-lib/aws-s3'
@@ -10,7 +9,7 @@ import {
   ViewerCertificate,
 } from 'aws-cdk-lib/aws-cloudfront'
 import { HostedZone, ARecord, RecordTarget } from 'aws-cdk-lib/aws-route53'
-import { CloudFrontTarget, ApiGateway } from 'aws-cdk-lib/aws-route53-targets'
+import { CloudFrontTarget } from 'aws-cdk-lib/aws-route53-targets'
 import {
   Certificate,
   CertificateValidation,
@@ -18,6 +17,7 @@ import {
 import { AttributeType, Table } from 'aws-cdk-lib/aws-dynamodb'
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs'
 import { translateAccessPolicy, translateTablePolicy } from './policies'
+import { RestApiService } from '../constructs'
 
 const PARTITION_KEY = 'requestId'
 const TABLE_NAME = 'translationsTable'
@@ -48,6 +48,12 @@ export class TranslatorService extends cdk.Stack {
       validation: CertificateValidation.fromDns(zone),
     })
 
+    const restApi = new RestApiService(this, 'restApiService', {
+      apiUrl,
+      certificate,
+      zone,
+    })
+
     // DynamoDB construct goes here
     new Table(this, TABLE_NAME, {
       tableName: TABLE_NAME,
@@ -68,22 +74,6 @@ export class TranslatorService extends cdk.Stack {
       compatibleRuntimes: [Runtime.NODEJS_20_X],
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     })
-
-    // API Gateway
-    const api = new RestApi(this, 'cloudLingoApi', {
-      restApiName: 'Cloud Lingo Service',
-      defaultCorsPreflightOptions: {
-        allowOrigins: Cors.ALL_ORIGINS,
-        allowMethods: Cors.ALL_METHODS,
-        allowHeaders: Cors.DEFAULT_HEADERS,
-      },
-      domainName: {
-        domainName: apiUrl,
-        certificate,
-      },
-    })
-
-    const apiResource = api.root.addResource('translation')
 
     const translateLambdaPath = path.resolve(
       path.join(lambdaDirPath, 'translate/index.ts'),
@@ -113,13 +103,15 @@ export class TranslatorService extends cdk.Stack {
 
     getTranslationsFunction.role?.addToPrincipalPolicy(translateTablePolicy)
 
-    // API Gateway Methods
-    apiResource.addMethod(
-      'POST',
-      new LambdaIntegration(postTranslationFunction),
-    )
+    restApi.addTranslateMethod({
+      httpMethod: 'POST',
+      lambda: postTranslationFunction,
+    })
 
-    apiResource.addMethod('GET', new LambdaIntegration(getTranslationsFunction))
+    restApi.addTranslateMethod({
+      httpMethod: 'GET',
+      lambda: getTranslationsFunction,
+    })
 
     // Viewer certificate
     const viewerCertificate = ViewerCertificate.fromAcmCertificate(
@@ -181,11 +173,11 @@ export class TranslatorService extends cdk.Stack {
       target: RecordTarget.fromAlias(new CloudFrontTarget(distro)),
     })
 
-    new ARecord(this, 'apiDns', {
-      zone,
-      recordName: 'cloud-lingo-api',
-      target: RecordTarget.fromAlias(new ApiGateway(api)),
-    })
+    // new ARecord(this, 'apiDns', {
+    //   zone,
+    //   recordName: 'cloud-lingo-api',
+    //   target: RecordTarget.fromAlias(new ApiGateway(api)),
+    // })
 
     new cdk.CfnOutput(this, 'cloudLingoWebUrl', {
       exportName: 'cloudLingoWebUrl',
