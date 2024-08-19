@@ -1,15 +1,11 @@
 import * as cdk from 'aws-cdk-lib'
 import * as path from 'path'
 import { Construct } from 'constructs'
-import { HostedZone } from 'aws-cdk-lib/aws-route53'
-import {
-  Certificate,
-  CertificateValidation,
-} from 'aws-cdk-lib/aws-certificatemanager'
 import {
   RestApiService,
   TranslationService,
   StaticWebsiteDeployment,
+  CertificateWrapper,
 } from '../constructs'
 
 export class TranslatorServiceStack extends cdk.Stack {
@@ -26,22 +22,20 @@ export class TranslatorServiceStack extends cdk.Stack {
     const cloudFrontUrl = `cloud-lingo.${domain}`
     const apiUrl = `cloud-lingo-api.${domain}`
 
-    // Fetch route53 hosted zone
-    const zone = HostedZone.fromLookup(this, 'HostedZone', {
-      domainName: domain,
-    })
-
-    // Create a certificate for the domain
-    const certificate = new Certificate(this, 'cloudLingoCertificate', {
-      domainName: domain,
-      subjectAlternativeNames: [cloudFrontUrl, apiUrl],
-      validation: CertificateValidation.fromDns(zone),
-    })
+    const certificateWrapper = new CertificateWrapper(
+      this,
+      'certificateWrapper',
+      {
+        domain,
+        cloudFrontUrl,
+        apiUrl,
+      },
+    )
 
     const restApi = new RestApiService(this, 'restApiService', {
       apiUrl,
-      certificate,
-      zone,
+      certificate: certificateWrapper.certificate,
+      zone: certificateWrapper.zone,
     })
 
     new TranslationService(this, 'translationService', {
@@ -53,8 +47,8 @@ export class TranslatorServiceStack extends cdk.Stack {
     new StaticWebsiteDeployment(this, 'staticWebsiteDeployment', {
       domain,
       cloudFrontUrl,
-      certificate,
-      zone,
+      certificate: certificateWrapper.certificate,
+      zone: certificateWrapper.zone,
     })
   }
 }
