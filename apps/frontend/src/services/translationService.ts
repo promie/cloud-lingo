@@ -9,7 +9,7 @@ const translateText = async (
   sourceText: string,
 ): Promise<ITranslateResponse> => {
   try {
-    const response = await axios.post(`${BASE_URL}/translation`, {
+    const response = await axios.post(`${BASE_URL}`, {
       sourceLang,
       targetLang,
       sourceText,
@@ -23,7 +23,7 @@ const translateText = async (
 
 const getTranslations = async (): Promise<ITranslateDbObject[]> => {
   try {
-    const response = await axios.get(`${BASE_URL}/translation`)
+    const response = await axios.get(`${BASE_URL}`)
     return response.data
   } catch (error) {
     console.error('Error getting translations:', error)

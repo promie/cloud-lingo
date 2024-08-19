@@ -4,7 +4,7 @@ import { Code, LayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda'
 import { AttributeType, Table } from 'aws-cdk-lib/aws-dynamodb'
 import * as cdk from 'aws-cdk-lib'
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam'
-import path from 'path'
+import * as path from 'path'
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs'
 import { RestApiService } from './RestApiService'
 
