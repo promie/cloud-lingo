@@ -1,19 +1,16 @@
 import * as cdk from 'aws-cdk-lib'
 import * as path from 'path'
 import { Construct } from 'constructs'
-import { Bucket } from 'aws-cdk-lib/aws-s3'
-import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment'
-import {
-  CloudFrontWebDistribution,
-  ViewerCertificate,
-} from 'aws-cdk-lib/aws-cloudfront'
-import { HostedZone, ARecord, RecordTarget } from 'aws-cdk-lib/aws-route53'
-import { CloudFrontTarget } from 'aws-cdk-lib/aws-route53-targets'
+import { HostedZone } from 'aws-cdk-lib/aws-route53'
 import {
   Certificate,
   CertificateValidation,
 } from 'aws-cdk-lib/aws-certificatemanager'
-import { RestApiService, TranslationService } from '../constructs'
+import {
+  RestApiService,
+  TranslationService,
+  StaticWebsiteDeployment,
+} from '../constructs'
 
 export class TranslatorServiceStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -53,64 +50,11 @@ export class TranslatorServiceStack extends cdk.Stack {
       restApi,
     })
 
-    // Viewer certificate
-    const viewerCertificate = ViewerCertificate.fromAcmCertificate(
+    new StaticWebsiteDeployment(this, 'staticWebsiteDeployment', {
+      domain,
+      cloudFrontUrl,
       certificate,
-      {
-        aliases: [cloudFrontUrl],
-      },
-    )
-
-    // S3 Bucket where the website site will reside
-    const bucket = new Bucket(this, 'cloudLingoBucket', {
-      websiteIndexDocument: 'index.html',
-      websiteErrorDocument: '404.html',
-      publicReadAccess: true,
-      blockPublicAccess: {
-        blockPublicAcls: false,
-        blockPublicPolicy: false,
-        ignorePublicAcls: false,
-        restrictPublicBuckets: false,
-      },
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      autoDeleteObjects: true,
-    })
-
-    // Cloudfront distribution
-    const distro = new CloudFrontWebDistribution(
-      this,
-      'cloudLingoDistribution',
-      {
-        viewerCertificate,
-        originConfigs: [
-          {
-            s3OriginSource: {
-              s3BucketSource: bucket,
-            },
-            behaviors: [{ isDefaultBehavior: true }],
-          },
-        ],
-      },
-    )
-
-    // S3 construct to deploy the website dist content
-    new BucketDeployment(this, 'cloudLingoBucketDeployment', {
-      destinationBucket: bucket,
-      sources: [Source.asset('../apps/frontend/dist')],
-      distribution: distro,
-      distributionPaths: ['/*'],
-    })
-
-    new ARecord(this, 'route53Domain', {
       zone,
-      recordName: domain,
-      target: RecordTarget.fromAlias(new CloudFrontTarget(distro)),
-    })
-
-    new ARecord(this, 'route53FullUrl', {
-      zone,
-      recordName: 'cloud-lingo',
-      target: RecordTarget.fromAlias(new CloudFrontTarget(distro)),
     })
   }
 }
