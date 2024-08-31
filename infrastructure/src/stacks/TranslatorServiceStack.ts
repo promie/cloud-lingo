@@ -7,6 +7,9 @@ import {
   StaticWebsiteDeployment,
   CertificateWrapper,
 } from '../constructs'
+import { getConfig } from '../helpers'
+
+const config = getConfig()
 
 export class TranslatorServiceStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -18,9 +21,9 @@ export class TranslatorServiceStack extends cdk.Stack {
     const lambdaLayersDirPath = path.join(projectRoot, 'packages/lambda-layers')
 
     // Domain name
-    const domain = 'pyutasane.com'
-    const cloudFrontUrl = `cloud-lingo.${domain}`
-    const apiUrl = `cloud-lingo-api.${domain}`
+    const domain = config.domain
+    const cloudFrontUrl = `${config.webSubdomain}.${domain}`
+    const apiUrl = `${config.apiSubdomain}.${domain}`
 
     const certificateWrapper = new CertificateWrapper(
       this,
