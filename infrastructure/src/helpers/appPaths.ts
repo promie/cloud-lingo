@@ -14,6 +14,7 @@ const findRootEnv = (searchPath: string): string => {
 }
 
 export const projectRootPath = findRootEnv(__dirname)
+export const projectEnvPath = path.join(projectRootPath, '.env')
 export const lambdaDirPath = path.join(projectRootPath, 'packages/lambdas')
 export const lambdaLayersDirPath = path.join(
   projectRootPath,
