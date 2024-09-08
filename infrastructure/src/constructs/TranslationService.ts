@@ -7,13 +7,12 @@ import { PolicyStatement } from 'aws-cdk-lib/aws-iam'
 import * as path from 'path'
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs'
 import { RestApiService } from './RestApiService'
+import { lambdaDirPath, lambdaLayersDirPath } from '../helpers'
 
 const PARTITION_KEY = 'requestId'
 const TABLE_NAME = 'translationsTable'
 
 export interface ITranslationServiceProps extends StackProps {
-  lambdaDirPath: string
-  lambdaLayersDirPath: string
   restApi: RestApiService
 }
 
@@ -21,7 +20,7 @@ export class TranslationService extends Construct {
   constructor(
     scope: Construct,
     id: string,
-    { lambdaDirPath, lambdaLayersDirPath, restApi }: ITranslationServiceProps,
+    { restApi }: ITranslationServiceProps,
   ) {
     super(scope, id)
 

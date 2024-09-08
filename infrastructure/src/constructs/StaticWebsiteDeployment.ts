@@ -10,6 +10,7 @@ import {
   ViewerCertificate,
 } from 'aws-cdk-lib/aws-cloudfront'
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment'
+import { frontendDistPath } from '../helpers'
 
 export interface IStaticWebsiteDeploymentProps extends StackProps {
   domain: string
@@ -69,7 +70,7 @@ export class StaticWebsiteDeployment extends Construct {
     // S3 construct to deploy the website dist content
     new BucketDeployment(this, 'cloudLingoBucketDeployment', {
       destinationBucket: bucket,
-      sources: [Source.asset('../apps/frontend/dist')],
+      sources: [Source.asset(frontendDistPath)],
       distribution: distro,
       distributionPaths: ['/*'],
     })

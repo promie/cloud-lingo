@@ -6,7 +6,7 @@ import {
   StaticWebsiteDeployment,
   CertificateWrapper,
 } from '../constructs'
-import { getConfig, lambdaDirPath, lambdaLayersDirPath } from '../helpers'
+import { getConfig } from '../helpers'
 
 const config = getConfig()
 
@@ -36,8 +36,6 @@ export class TranslatorServiceStack extends cdk.Stack {
     })
 
     new TranslationService(this, 'translationService', {
-      lambdaDirPath,
-      lambdaLayersDirPath,
       restApi,
     })
 
