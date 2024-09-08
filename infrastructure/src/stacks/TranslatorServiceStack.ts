@@ -1,5 +1,4 @@
 import * as cdk from 'aws-cdk-lib'
-import * as path from 'path'
 import { Construct } from 'constructs'
 import {
   RestApiService,
@@ -14,11 +13,6 @@ const config = getConfig()
 export class TranslatorServiceStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props)
-
-    // Project paths
-    const projectRoot = '../'
-    const lambdaDirPath = path.join(projectRoot, 'packages/lambdas')
-    const lambdaLayersDirPath = path.join(projectRoot, 'packages/lambda-layers')
 
     // Domain name
     const domain = config.domain
@@ -42,8 +36,6 @@ export class TranslatorServiceStack extends cdk.Stack {
     })
 
     new TranslationService(this, 'translationService', {
-      lambdaDirPath,
-      lambdaLayersDirPath,
       restApi,
     })
 
